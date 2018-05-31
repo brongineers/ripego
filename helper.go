@@ -52,8 +52,10 @@ func parseRPSLValue(whoisText string, class string, section string) string {
 
 		if hasIn {
 			if strings.HasPrefix(line, section) {
-				sectionValue = parseRPSLine(line)
-				break
+				if len(sectionValue) > 0 {
+					sectionValue += "\n"
+				}
+				sectionValue += parseRPSLine(line)
 			}
 		}
 	}
