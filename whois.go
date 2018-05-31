@@ -3,6 +3,7 @@ package ripego
 import (
 	"errors"
 	"net"
+	"strings"
 )
 
 //go:generate go run gen.go
@@ -52,7 +53,13 @@ func IPLookup(ipaddr string) (*WhoisInfo, error) {
 		return nil, errors.New("Unable to find whois function for: " + whoisServer)
 	}
 
-	return lf(ipaddr, whoisServer)
+	response, error := lf(ipaddr, whoisServer)
+	if error == nil && strings.HasPrefix(response.Netname, "APNIC-ERX") {
+		lf = ApnicCheck
+		whoisServer = "whois.apnic.net"
+		response, error = lf(ipaddr, whoisServer)
+	}
+	return response, error
 }
 
 // getIPv4Server returns the whois server fot the given IPv4 address
